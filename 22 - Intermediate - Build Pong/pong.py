@@ -2,6 +2,7 @@ import time
 from turtle import Screen, Turtle
 from paddle import Paddle
 from ball import Ball
+from scoreboard import Scoreboard
 
 screen = Screen()
 screen.bgcolor('black')
@@ -12,6 +13,7 @@ screen.tracer(0)
 r_paddle = Paddle((350, 0))
 l_paddle = Paddle((-350, 0))
 ball = Ball()
+scoreboard = Scoreboard()
 
 
 screen.listen()
@@ -40,10 +42,11 @@ while game_is_on:
     # Control goal
     if ball.xcor() > 370:
         ball.reset_position()
-        print("goal")
+        scoreboard.l_goal()
 
     if ball.xcor() < -370:
         ball.reset_position()
-        print("goal")
+        scoreboard.r_goal()
+
 
 screen.exitonclick()
