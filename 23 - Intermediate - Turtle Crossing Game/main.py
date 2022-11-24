@@ -29,4 +29,9 @@ while game_is_on:
         if car.distance(player) < 20:
             game_is_on = False
 
+    if player.crossing_control():
+        car_manager.level_up()
+        player.reset()
+
+
 screen.exitonclick()

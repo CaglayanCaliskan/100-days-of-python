@@ -17,14 +17,14 @@ class Player(Turtle):
 
     def go_up(self):
         self.forward(MOVE_DISTANCE * 2)
-        self.crossing_control(self.ycor())
+        self.crossing_control()
 
     def reset(self):
         self.penup()
         self.goto(STARTING_POSITION)
 
-    def crossing_control(self, y_line):
-        if y_line > FINISH_LINE_Y:
-            # level up
-            #
-            self.reset()
+    def crossing_control(self):
+        if self.ycor() > FINISH_LINE_Y:
+            return True
+        else:
+            return False
