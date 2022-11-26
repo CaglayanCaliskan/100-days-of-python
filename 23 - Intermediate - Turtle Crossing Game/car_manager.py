@@ -29,3 +29,10 @@ class CarManager:
 
     def level_up(self):
         self.car_speed += MOVE_INCREMENT
+
+    def control_car_road(self):
+        for car in self.all_cars:
+            if car.xcor() == -300:
+                self.all_cars.remove(car)  # removing from car list
+                car.hideturtle()
+                car.clear()
