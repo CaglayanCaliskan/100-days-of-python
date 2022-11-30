@@ -12,7 +12,7 @@ def calculater():
     return label_result.config(text=km)
 
 
-# Enrty
+# Entry
 
 input = tkinter.Entry()
 input.grid(column=1, row=0)
