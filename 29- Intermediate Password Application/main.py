@@ -84,7 +84,7 @@ def find_password():
                 title=website, message=f"Email: {email}\nPassword: {password}")
         else:
             messagebox.showinfo(
-                title="404 Not Found", message=f"Not found any password,Please try another input")
+                title="404 Not Found", message=f"Not found any password,Please try another input.")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
