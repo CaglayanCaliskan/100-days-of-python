@@ -7,13 +7,23 @@ to_learn = data.to_dict(orient="records")  # AMAZING
 
 
 # ---------------------------- FUNCTİON ------------------------------- #
+current_card = {}
 
 
 def next_card():
+    global current_card, flip_timer
+    window.after_cancel(flip_timer)
     current_card = random.choice(to_learn)
-    print(current_card["Deutch"], current_card["Türkçe"])
-    canvas.itemconfig(card_title, text="Deutch")
-    canvas.itemconfig(card_word, text=current_card["Deutch"])
+    canvas.itemconfig(card_title, text="Deutch", fill="black")
+    canvas.itemconfig(card_word, text=current_card["Deutch"], fill="black")
+    canvas.itemconfig(card_background, image=card_front_img)
+    flip_timer = window.after(3000, func=flip_card)
+
+
+def flip_card():
+    canvas.itemconfig(card_title, text="Türkçe", fill="white")
+    canvas.itemconfig(card_word, text=current_card["Türkçe"], fill="white")
+    canvas.itemconfig(card_background, image=card_back_img)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -21,9 +31,13 @@ window = Tk()
 window.title("Flash Card")
 window.config(bg=BACKGROUND_COLOR, padx=50, pady=50)
 
+flip_timer = window.after(3000, func=flip_card)
+
+
 canvas = Canvas(width=800, height=526)
-logo_img = PhotoImage(file="./images/card_front.png")
-canvas.create_image(400, 263, image=logo_img)
+card_front_img = PhotoImage(file="./images/card_front.png")
+card_back_img = PhotoImage(file="./images/card_back.png")
+card_background = canvas.create_image(400, 263, image=card_front_img)
 card_title = canvas.create_text(
     400, 150, font=('Ariel', 40, 'italic'))
 card_word = canvas.create_text(
