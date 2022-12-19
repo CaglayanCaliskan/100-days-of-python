@@ -1,0 +1,14 @@
+{
+    "test": {
+        "email": "example@gmail.com",
+        "password": "123"
+    },
+    "trest2": {
+        "email": "SAVED to File",
+        "password": "123123"
+    },
+    "SAVED to File": {
+        "email": "SAVED to File",
+        "password": "123123"
+    }
+}

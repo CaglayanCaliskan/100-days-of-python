@@ -2,6 +2,7 @@ import random
 from tkinter import *
 from tkinter import messagebox
 import pyperclip
+import json
 
 printable = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -29,16 +30,35 @@ def save_password():
     website = entry_website.get()
     email = entry_email.get()
     password = entry_password.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
 
-    if len(website) < 1 or len(email) < 1:
+    if len(website) < 1 or len(email) < 1 or len(password) < 1:
         messagebox.showerror(title=f"Oops",
                              message="please fill blanks")
     else:
         is_ok = messagebox.askokcancel(
             title="Comfirm", message=f"These are the derails entered: \nEmail: {email}\nPassword: {password}\nIs it ok to save? ")
         if is_ok:
-            with open("passwords.txt", "a") as file:
-                file.write(f"{website} | {email} | {password}\n")
+            try:
+                with open("data.json", "r") as data_file:
+                    # Reading old data
+                    data = json.load(data_file)
+            except FileNotFoundError:
+                with open("data.json", "w") as data_file:
+                    json.dump(new_data, data_file, indent=4)
+            else:
+                # Updating old data with new data
+                data.update(new_data)
+
+                with open("data.json", "w") as data_file:
+                    # Saving updated data
+                    json.dump(data, data_file, indent=4)
+            finally:
                 entry_email.delete(0, END)
                 entry_email.insert(0, "SAVED to File")
                 entry_website.delete(0, END)
