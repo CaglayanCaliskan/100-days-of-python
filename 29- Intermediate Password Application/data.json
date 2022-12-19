@@ -1,14 +1,10 @@
 {
-    "test": {
+    "deneme": {
         "email": "example@gmail.com",
-        "password": "123"
+        "password": "80Gg-NdcW-68cU-P3iu"
     },
-    "trest2": {
-        "email": "SAVED to File",
-        "password": "123123"
-    },
-    "SAVED to File": {
-        "email": "SAVED to File",
-        "password": "123123"
+    "deneme2": {
+        "email": "example@gmail.com",
+        "password": "EA0N-rp1P-Le4x-5eVx"
     }
 }
