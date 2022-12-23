@@ -3,6 +3,10 @@ import requests
 
 
 def get_quote():
+    response = requests.get(url="https://api.kanye.rest/")
+    kayne_quote = response.json()["quote"]
+    canvas.itemconfig(quote_text, text=kayne_quote)
+
     # Write your code here.
 
 
