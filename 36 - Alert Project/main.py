@@ -72,8 +72,8 @@ def getNews():
 
 if diff_percent > 2:
     print("Get News")
-    news = getNews()["articles"]
-    print(news[:3])
+    news = getNews()["articles"]  # todo 6
+    print(news[:3])  # Todo 7
 
 else:
     print("low price")
