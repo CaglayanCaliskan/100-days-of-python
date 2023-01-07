@@ -72,8 +72,15 @@ def getNews():
 
 if diff_percent > 2:
     print("Get News")
-    news = getNews()["articles"]  # todo 6
-    print(news[:3])  # Todo 7
+    # todo 6
+    news = getNews()["articles"]
+    # Todo 7
+    first_three_news = news[:3]
+    # print(first_three_news)
+    # Todo 8
+    formatted_news = [
+        f"Headline: {item['title']}. \nBrief:{item['description']}" for item in first_three_news]
+    print(formatted_news)
 
 else:
     print("low price")
@@ -85,7 +92,7 @@ else:
 #Done in todo5
 
 # TODO 7. - Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
-
+# Done
 # STEP 3: Use twilio.com/docs/sms/quickstart/python
 # to send a separate message with each article's title and description to your phone number.
 
