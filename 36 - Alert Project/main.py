@@ -1,8 +1,15 @@
+import datetime
+from dotenv import load_dotenv
+import os
+import requests
+
+load_dotenv()
 STOCK_NAME = "TSLA"
 COMPANY_NAME = "Tesla Inc"
 
 STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
+STOCK_API_KEY = os.getenv('alphavantage_API')
 
 
 # STEP 1: Use https://www.alphavantage.co/documentation/#daily
@@ -10,7 +17,26 @@ NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
 
 # TODO 1. - Get yesterday's closing stock price. Hint: You can perform list comprehensions on Python dictionaries. e.g. [new_value for (key, value) in dictionary.items()]
 
+stock_params = {
+    "function": "TIME_SERIES_DAILY_ADJUSTED",
+    "symbol": STOCK_NAME,
+    "apikey": STOCK_API_KEY
+}
+
+response = requests.get(STOCK_ENDPOINT, params=stock_params)
+
+today = datetime.date.today()
+yesterday = today - datetime.timedelta(days=1)
+# ereyesterdat = today - datetime.timedelta(days=2)
+
+yesterday_close_data = response.json(
+)["Time Series (Daily)"][str(yesterday)]["4. close"]
+
+print(yesterday_close_data)
+
+
 # TODO 2. - Get the day before yesterday's closing stock price
+
 
 # TODO 3. - Find the positive difference between 1 and 2. e.g. 40 - 20 = -20, but the positive difference is 20. Hint: https://www.w3schools.com/python/ref_func_abs.asp
 
