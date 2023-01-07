@@ -49,12 +49,19 @@ difference = abs(float(yesterday_close_price) -
                  float(ereyesterday_close_price))
 print(difference)
 
-# diffrence = abs(float(yesterday_close_data) - float(ereyesterday_close_data))
-# print(diffrence)
 
 # TODO 4. - Work out the percentage difference in price between closing price yesterday and closing price the day before yesterday.
 
+diff_percent = difference / float(yesterday_close_price) * 100
+print(diff_percent)
+
+
 # TODO 5. - If TODO4 percentage is greater than 5 then print("Get News").
+
+if diff_percent > 2:
+    print("Get News")
+else:
+    print("low price")
 
 # STEP 2: https://newsapi.org/
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME.
