@@ -16,6 +16,6 @@ for title in titles:
 movie_list = movie_list[::-1]
 
 
-with open('movies.txt', 'w', encoding="utf-8") as f:
+with open('./movies.txt', 'w', encoding="utf-8") as f:
     for movie in movie_list:
         f.write(f"{movie}\n")
