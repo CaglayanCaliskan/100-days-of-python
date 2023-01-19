@@ -2,7 +2,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from datetime import datetime
 
 
 path = "C:\Development\chromedriver_win32\chromedriver.exe"
