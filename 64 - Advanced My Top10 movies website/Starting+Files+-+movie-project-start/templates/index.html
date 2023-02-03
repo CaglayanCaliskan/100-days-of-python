@@ -44,8 +44,10 @@
         <p class="review">"{{item.review}}"</p>
         <p class="overview">{{item.description}}</p>
 
-        <a href="#" class="button">Update</a>
-        <a href="#" class="button delete-button">Delete</a>
+        <a href="{{url_for('edit',id=item.id)}}" class="button">Update</a>
+        <a href="{{url_for('delete',id=item.id)}}" class="button delete-button"
+          >Delete</a
+        >
       </div>
     </div>
   </div>

@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, FloatField
 from wtforms.validators import DataRequired
 import requests
 
@@ -28,6 +28,12 @@ class Movie(db.Model):
     img_url = db.Column(db.String, nullable=False)
 
 
+class EditForm(FlaskForm):
+    rating = FloatField('Your Rating Out of 10 e.g 7.5 Name')
+    review = StringField('Your Review')
+    submit = SubmitField(label='Update it')
+
+
 # new_movie = Movie(
 #     title="Phone Booth",
 #     year=2002,
@@ -49,9 +55,36 @@ def home():
     data = []
     for item in myDb:
         data.append(item)
-        print(item)
 
     return render_template("index.html", data=data)
+
+
+@app.route("/edit/<id>", methods=['GET', 'POST'])
+def edit(id):
+    form = EditForm(request.form)
+    if request.method == 'POST':
+        with app.app_context():
+            # find item
+            item = db.get_or_404(Movie, id)
+            # update from db
+            item.rating = form.rating.data
+            item.review = form.review.data
+
+            db.session.commit()
+        return redirect(url_for('home'))
+
+    else:
+        return render_template("edit.html", form=form)
+
+
+@app.route("/delete/<id>")
+def delete(id):
+    with app.app_context():
+        item = db.get_or_404(Movie, id)
+        print(item)
+        db.session.delete(item)
+        db.session.commit()
+        return redirect(url_for('home'))
 
 
 if __name__ == '__main__':

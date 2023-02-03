@@ -1,18 +1,33 @@
-{% extends 'bootstrap/base.html' %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block styles %}
-  {{ super() }}
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,700">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,700">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-{% endblock %}
-
-{% block title %}Edit Movies{% endblock %}
-
-{% block content %}
+{% extends 'bootstrap/base.html' %} {% import "bootstrap/wtf.html" as wtf %} {%
+block styles %} {{ super() }}
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,700"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Poppins:300,400,700"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/styles.css') }}"
+/>
+{% endblock %} {% block title %}Edit Movies{% endblock %} {% block content %}
 <div class="content">
   <h1 class="heading">Movie Title</h1>
-    <p class="description">Edit Movie Rating</p>
-  </div>
+  <p class="description">Edit Movie Rating</p>
+  <form
+    method="POST"
+    class="w-50"
+    action="{{url_for(request.endpoint,**request.view_args)}}"
+  >
+    {% for field in form %} {% if field.type != "SubmitField" %}
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ field.label(class="w-25") }}:</label>
+
+      {{ field(class="form-control",placeholder="Type here")}}
+    </div>
+    {% endif %} {% endfor %} {{form.submit(class='btn btn-primary')}}
+  </form>
+</div>
 {% endblock %}
