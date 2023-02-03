@@ -19,13 +19,17 @@ db.init_app(app)
 
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, unique=True, nullable=False)
-    year = db.Column(db.Integer, unique=True, nullable=False)
+    title = db.Column(db.String, nullable=False)
+    year = db.Column(db.Integer,  nullable=True)
     description = db.Column(db.String)
     rating = db.Column(db.Float, nullable=False)
     ranking = db.Column(db.Integer, nullable=False)
     review = db.Column(db.String, nullable=False)
     img_url = db.Column(db.String, nullable=False)
+
+
+# with app.app_context():
+#     db.create_all()
 
 
 class EditForm(FlaskForm):
@@ -34,15 +38,20 @@ class EditForm(FlaskForm):
     submit = SubmitField(label='Update it')
 
 
-# new_movie = Movie(
-#     title="Phone Booth",
-#     year=2002,
-#     description="Publicist Stuart Shepard finds himself trapped in a phone booth, pinned down by an extortionist's sniper rifle. Unable to leave or receive outside help, Stuart's negotiation with the caller leads to a jaw-dropping climax.",
-#     rating=7.3,
-#     ranking=10,
-#     review="My favourite character was the caller.",
-#     img_url="https://image.tmdb.org/t/p/w500/tjrX2oWRCM3Tvarz38zlZM7Uc10.jpg"
-# )
+class AddForm(FlaskForm):
+    title = StringField('Film Title')
+    submit = SubmitField(label='Add Film')
+
+
+new_movie = Movie(
+    title="Phone Booth",
+    year=2002,
+    description="Publicist Stuart Shepard finds himself trapped in a phone booth, pinned down by an extortionist's sniper rifle. Unable to leave or receive outside help, Stuart's negotiation with the caller leads to a jaw-dropping climax.",
+    rating=7.3,
+    ranking=10,
+    review="My favourite character was the caller.",
+    img_url="https://image.tmdb.org/t/p/w500/tjrX2oWRCM3Tvarz38zlZM7Uc10.jpg"
+)
 
 # with app.app_context():
 #     db.session.add(new_movie)
@@ -64,6 +73,7 @@ def edit(id):
     form = EditForm(request.form)
     if request.method == 'POST':
         with app.app_context():
+            print(form)
             # find item
             item = db.get_or_404(Movie, id)
             # update from db
@@ -85,6 +95,30 @@ def delete(id):
         db.session.delete(item)
         db.session.commit()
         return redirect(url_for('home'))
+
+
+@app.route("/add", methods=['GET', 'POST'])
+def add():
+    form = AddForm(request.form)
+    if form.validate_on_submit():
+        print(form.title.data)
+        new_movie = Movie(
+            title=form.title.data,
+            year=2004,
+            description="Publicist Stuart Shepard finds himself trapped in a phone booth, pinned down by an extortionist's sniper rifle. Unable to leave or receive outside help, Stuart's negotiation with the caller leads to a jaw-dropping climax.",
+            rating=7.3,
+            ranking=10,
+            review="My favourite character was the caller.",
+            img_url="https://image.tmdb.org/t/p/w500/tjrX2oWRCM3Tvarz38zlZM7Uc10.jpg"
+        )
+        with app.app_context():
+            db.session.add(new_movie)
+
+            db.session.commit()
+            db.session.close()
+            return redirect(url_for('home'))
+
+    return render_template("add.html", form=form)
 
 
 if __name__ == '__main__':
