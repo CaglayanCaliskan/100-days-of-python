@@ -73,7 +73,6 @@ def edit(id):
     form = EditForm(request.form)
     if request.method == 'POST':
         with app.app_context():
-            print(form)
             # find item
             item = db.get_or_404(Movie, id)
             # update from db
@@ -91,7 +90,6 @@ def edit(id):
 def delete(id):
     with app.app_context():
         item = db.get_or_404(Movie, id)
-        print(item)
         db.session.delete(item)
         db.session.commit()
         return redirect(url_for('home'))
@@ -101,7 +99,6 @@ def delete(id):
 def add():
     form = AddForm(request.form)
     if form.validate_on_submit():
-        print(form.title.data)
         new_movie = Movie(
             title=form.title.data,
             year=2004,
