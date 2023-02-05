@@ -44,6 +44,8 @@ def home():
     return render_template("index.html")
 
 
+# HTTP GET - Read Record
+
 @app.route("/random")
 def get_random_cafe():
     cafes = db.session.query(Cafe).all()
@@ -76,6 +78,9 @@ def find_cafes():
     # return jsonify(cafes=arr)
 
 
+# HTTP POST - Create Record
+
+
 @app.route("/add", methods=["GET", "POST"])
 def add_cafe():
     # Add a new cafe
@@ -103,13 +108,44 @@ def add_cafe():
         else:
             return jsonify(error={f"Succes": "Successfully added the new cafe."})
 
-
-# HTTP GET - Read Record
-
-# HTTP POST - Create Record
-
 # HTTP PUT/PATCH - Update Record
 
+
+@app.route("/update/<id>", methods=["GET", "PATCH"])
+def cafe_update(id):
+    if request.method == "PATCH":
+        cafe = db.session.query(Cafe).get(id)
+        new_price = request.form.get("new_price")
+        try:
+            cafe.coffee_price = new_price
+            db.session.commit()
+            return jsonify(response={"success": "Successfully updated the price."}), 200
+        except:
+            return jsonify(error={"Not Found": "Sorry a cafe with that id was not found in the database."}), 404
+
+
 # HTTP DELETE - Delete Record
+
+@app.route("/report-closed/<id>", methods=["GET", "DELETE"])
+def cafe_report(id):
+    real_key = 321321
+    if request.method == "DELETE":
+        try:
+            # catch params
+            api_key_params = request.args['api-key']
+            # conditions
+            if (real_key == (int(api_key_params))):
+                # do something on db
+                cafe = db.session.query(Cafe).get(id)
+                db.session.delete(cafe)
+                db.session.commit()
+                return jsonify(response={"success": "Successfully deleted the cafe from the database."}), 200
+
+            else:
+                return jsonify(error={"Forbidden": "Sorry, that's not allowed. Make sure you have the correct api_key."}), 403
+        except:
+            return jsonify(error={"Not Found": "Sorry a cafe with that id was not found in the database."}), 404
+
+
 if __name__ == '__main__':
     app.run(debug=True)
