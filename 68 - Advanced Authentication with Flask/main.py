@@ -9,9 +9,13 @@ app.config['SECRET_KEY'] = 'any-secret-key-you-choose'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
-# CREATE TABLE IN DB
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
 class User(UserMixin, db.Model):
@@ -31,14 +35,30 @@ def home():
 @app.route('/register', methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+
+        if User.query.filter_by(email=request.form.get('email')).first():
+            # User already exists
+            flash("You've already signed up with that email, log in instead!")
+            return redirect(url_for('login'))
+
+        hash_and_salted_password = generate_password_hash(
+            request.form["password"],
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
+
         new_user = User(
             email=request.form["email"],
-            password=request.form["password"],
+            password=hash_and_salted_password,
             name=request.form["name"]
         )
+
         db.session.add(new_user)
         db.session.commit()
-        session['user_name'] = new_user.name
+
+        # Log in and authenticate user after adding details to database.
+        login_user(new_user)
+
         return redirect(url_for("secrets"))
 
     return render_template("register.html")
@@ -50,22 +70,28 @@ def login():
 
         users = User.query.all()
         for user in users:
-            if user.email == request.form["email"] and user.password == request.form["password"]:
-                session['user_name'] = user.name
+            if user.email == request.form["email"] and check_password_hash(user.password, request.form["password"]):
+                login_user(user)
+
                 return redirect(url_for("secrets"))
+            else:
+                print("zort")
 
     return render_template("login.html")
 
 
 @app.route('/secrets')
+@login_required
 def secrets():
+    print(current_user.name)
 
-    return render_template("secrets.html", name=session["user_name"])
+    return render_template("secrets.html", name=current_user.name)
 
 
 @app.route('/logout')
 def logout():
-    pass
+    logout_user()
+    return redirect(url_for('home'))
 
 
 @app.route('/download')
