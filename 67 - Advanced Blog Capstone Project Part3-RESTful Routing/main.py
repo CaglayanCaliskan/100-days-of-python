@@ -1,16 +1,13 @@
+
 from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, URL
-from flask_ckeditor import CKEditor, CKEditorField
+from flask_ckeditor import CKEditor
 from datetime import date
+from flask_login import UserMixin
+from forms import CreatePostForm, RegisterPostForm
+from werkzeug.security import generate_password_hash, check_password_hash
 
-
-# Delete this code:
-# import requests
-# posts = requests.get("https://api.npoint.io/43644ec4f0013682fc0d").json()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -37,14 +34,12 @@ class BlogPost(db.Model):
     img_url = db.Column(db.String(250), nullable=False)
 
 
-# WTForm
-class CreatePostForm(FlaskForm):
-    title = StringField("Blog Post Title", validators=[DataRequired()])
-    subtitle = StringField("Subtitle", validators=[DataRequired()])
-    author = StringField("Your Name", validators=[DataRequired()])
-    img_url = StringField("Blog Image URL", validators=[DataRequired(), URL()])
-    body = CKEditorField("Blog Content", validators=[DataRequired()])
-    submit = SubmitField("Submit Post")
+class User(UserMixin, db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(100))
 
 
 @app.route('/')
@@ -61,6 +56,30 @@ def about():
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
+
+# REGISTER POST
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+
+    form = RegisterPostForm()
+    if request.method == "POST":
+
+        hash_and_salted_password = generate_password_hash(
+            form.password.data,
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
+        new_user = User(
+            email=form.email.data,
+            name=form.name.data,
+            password=hash_and_salted_password,
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for("get_all_posts"))
+    return render_template("register.html", form=form)
 
 # SHOW POST
 
