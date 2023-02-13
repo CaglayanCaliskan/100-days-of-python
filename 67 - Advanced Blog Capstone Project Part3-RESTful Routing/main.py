@@ -25,6 +25,8 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+admin_enter = False
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -54,7 +56,7 @@ class User(UserMixin, db.Model):
 @app.route('/')
 def get_all_posts():
     posts = db.session.query(BlogPost).all()
-    return render_template("index.html", all_posts=posts)
+    return render_template("index.html", all_posts=posts, admin_enter=admin_enter)
 
 
 @app.route("/about")
@@ -102,12 +104,17 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
+    global admin_enter
 
     if request.method == "POST":
         email = form.email.data
         password = form.password.data
         user = User.query.filter_by(email=email).first()
         # Email doesn't exist
+        if user.id == 1:
+            admin_enter = True
+        else:
+            admin_enter = False
         if not user:
             flash("That email does not exist, please try again.")
             return redirect(url_for('login'))
@@ -119,12 +126,13 @@ def login():
             login_user(user)
             return redirect(url_for('get_all_posts'))
 
-    return render_template("login.html", form=form)
+    return render_template("login.html", form=form, admin_enter=admin_enter)
 
 
 @app.route("/logout")
 def logout():
     logout_user()
+    admin_enter = False
     return redirect(url_for('get_all_posts'))
 
 # SHOW POST
