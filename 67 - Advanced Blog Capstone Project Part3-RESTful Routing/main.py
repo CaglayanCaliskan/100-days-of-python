@@ -1,11 +1,11 @@
 
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, flash, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_ckeditor import CKEditor
 from datetime import date
-from flask_login import UserMixin
-from forms import CreatePostForm, RegisterPostForm
+from flask_login import LoginManager, UserMixin, login_user, logout_user
+from forms import CreatePostForm, RegisterPostForm, LoginForm
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -20,6 +20,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 # CONFIGURE TABLE
 
@@ -66,6 +75,13 @@ def register():
     form = RegisterPostForm()
     if request.method == "POST":
 
+        # If user's email already exists
+        if User.query.filter_by(email=form.email.data).first():
+            # Send flash messsage
+            flash("You've already signed up with that email, log in instead!")
+            # Redirect to /login route.
+            return redirect(url_for('login'))
+
         hash_and_salted_password = generate_password_hash(
             form.password.data,
             method='pbkdf2:sha256',
@@ -78,8 +94,38 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
+        login_user(new_user)
         return redirect(url_for("get_all_posts"))
     return render_template("register.html", form=form)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+
+    if request.method == "POST":
+        email = form.email.data
+        password = form.password.data
+        user = User.query.filter_by(email=email).first()
+        # Email doesn't exist
+        if not user:
+            flash("That email does not exist, please try again.")
+            return redirect(url_for('login'))
+        elif not check_password_hash(user.password, password):
+            flash('Password incorrect, please try again.')
+            return redirect(url_for('login'))
+
+        else:
+            login_user(user)
+            return redirect(url_for('get_all_posts'))
+
+    return render_template("login.html", form=form)
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('get_all_posts'))
 
 # SHOW POST
 
