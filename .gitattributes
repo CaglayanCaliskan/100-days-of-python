@@ -1,2 +1,2 @@
-*.html linguist-vendored
-*.py linguist-vendored
+# *.html linguist-vendored
+# *.py linguist-vendored
